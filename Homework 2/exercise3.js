@@ -9,7 +9,7 @@
         When you reach result, run it few times to check different random on arrays.
         After you found result you can check few more length to compare how fast time growth on BubbleSort comparing to QuickSort.
 */
-
+ 
 function bubbleSort(array){
     let top = array.length - 1;
     let lastSwappedPos;
