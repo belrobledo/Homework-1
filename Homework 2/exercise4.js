@@ -15,4 +15,4 @@
 
     NOTE: I have a question for this exercise, how can we find the upper and lower bounds if we only know the average value and don't see the actual function?
     In the case of Θ(1) it's easy because time complexity of the algorithm is constant, so it's always 1. But for the other cases I didn't understand how to calculate them.
-*/
+*/ 
