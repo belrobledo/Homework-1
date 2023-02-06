@@ -29,3 +29,5 @@ function sum(x) {
 
 console.log("sum = " + sum(1)(2)(3));
 console.log(3 + sum(1)(2)(3))
+
+ 
