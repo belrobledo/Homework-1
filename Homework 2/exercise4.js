@@ -16,3 +16,17 @@
     NOTE: I have a question for this exercise, how can we find the upper and lower bounds if we only know the average value and don't see the actual function?
     In the case of Θ(1) it's easy because time complexity of the algorithm is constant, so it's always 1. But for the other cases I didn't understand how to calculate them.
 */ 
+
+/*
+    PROFESSOR RESOLUTION:
+    1. Θ( 1 )
+        non-stricts limits: same than Θ( 1 )
+        stricts limits: 
+
+    2. Θ( √n )
+            O(√nlogn), O(n), O(nlogn)
+            Ω(1), Ω(logn)
+
+    3. Θ( n )
+            O(nlogn), O(n^2), O(n^3)
+*/
