@@ -155,9 +155,9 @@ class BlackRedTree{
     remove(element){
         let node = this.find(this.root, element);
     
-        if(node){
+        if(node){ //if element's node was found
             let x;
-            let color = node.color;
+
             if(node.left === null){ //case: node has 1 or 0 child
                 x = node.right;
                 this.transplant(node, x);
@@ -182,10 +182,10 @@ class BlackRedTree{
                     x.right.parent = x;
                 }
                 this.transplant(node, x);
-                x.color = color;
             }
-            if(color === 'B'){ //to fix double-black conflict
-                this.deleteFixer(x);
+
+            if((x && x.color === 'B') && (x.parent && x.parent.color === 'B')){
+                this.deleteFixer(x.parent);
             }
         }
     }
@@ -213,64 +213,63 @@ class BlackRedTree{
         }
     }
 
-    deleteFixer(node){
-        while(node && node !== this.root && node.color === 'B'){
-            let s;
+    //Recursive function to fix double black conflict after removing an element.
+    deleteFixer(node) {
+        if (node === this.root) { //finish fixing the tree
+          return;
+        }
 
-            if(node === node.parent.left){ //if node is left child of its parent -> s is right child
-                s = node.parent.right;
-                if(s.color === 'R'){ //if sibling is red
-                    s.color = 'B';
-                    node.parent.color = 'R';
-                    this.rotateLeft(node.parent);
-                    s = node.parent.right;
+        let p = node.parent;
+        let s = (node === p.left) ? p.right : p.left;
+      
+        if (s === null) { //if no sibling, goes to check node.parent
+            this.deleteFixer(p);
+        } else {
+            if (s.color === 'R') { //if sibling is red, rotate and recolor.
+                p.color = 'R';
+                s.color = 'B';
+      
+                if (s === p.left) { //Left case
+                    this.rotateRight(p);
+                } else { //Right case
+                    this.rotateLeft(p);
                 }
-                if ((s.left === null || s.left.color === 'B') && (s.right === null || s.right.color === 'B')){ //if both children of s are black
-                    s.color = 'R';
-                    node = node.parent;
-                } else {
-                    if (s.right === null || s.right.color === 'B'){ //if right child of s is black -> left child of s is red
-                        s.left.color = 'B';
-                        s.color = 'R';
-                        this.rotateRight(s);
-                        s = node.parent.right;
+                this.deleteFixer(node);
+            } else { //else slibing is black
+                if ((s.left != null && s.left.color === 'R') || (s.right != null && s.right.color === 'R')) { //s has 1+ red children
+                    if (s.left !== null && s.left.color === 'R') { // if left child of sibling is red
+                        if (s === p.left) { // if sibling is left child -> Left-Left case
+                            s.left.color = s.color;
+                            s.color = p.color;
+                            this.rotateRight(p);
+                        } else { // if sibling is right child -> Right-Left case
+                            s.left.color = p.color;
+                            this.rotateRight(s);
+                            this.rotateLeft(p);
+                        }
+                    } else { // if right child of sibling is red or both are red
+                        if (s === p.left) { // if sibling is left child -> Left-Right case
+                            s.right.color = p.color;
+                            this.rotateLeft(s);
+                            this.rotateRight(p);
+                        } else { // if sibling is right child -> Right-Right case
+                            s.right.color = s.color;
+                            s.color = p.color;
+                            this.rotateLeft(p);
+                        }
                     }
-    
-                    s.color = node.parent.color;
-                    node.parent.color = 'B';
-                    (s.right) && (s.right.color = 'B');
-                    this.rotateLeft(node.parent);
-                    node = this.root;
-                }
-            } else { //if node is right child of its parent -> s is left child
-                s = node.parent.left;
-                if (s.color === 'R') { //if sibling is red
-                    s.color = 'B';
-                    node.parent.color = 'R';
-                    this.rotateRight(node.parent);
-                    s = node.parent.left;
-                }
-                if ((s.right === null || s.right.color === 'B') && (s.left === null || s.left.color === 'B')) { //if both children of s are black
+            
+                    p.color = 'B';
+                } else { // else both children are black
                     s.color = 'R';
-                    node = node.parent;
-                } else {
-                    if (s.left === null || s.left.color === 'B') { //if left child of s is black -> right child of s is red
-                        s.right.color = 'B';
-                        s.color = 'R';
-                        this.rotateLeft(s);
-                        s = node.parent.left;
+        
+                    if (p.color === 'B') {
+                        this.deleteFixer(p);
+                    } else {
+                        p.color = 'B';
                     }
-    
-                    s.color = node.parent.color;
-                    node.parent.color = 'B';
-                    (s.left) && (s.left.color = 'B');
-                    this.rotateRight(node.parent);
-                    node = this.root;
                 }
             }
-        }
-        if(node){
-            node.color = 'B';
         }
     }
 
@@ -326,7 +325,7 @@ class BlackRedTree{
         if(tree){
             this.showInorder(tree.left);
             console.log(tree.data + tree.color);
-            //console.log(tree);
+            console.log(tree);
             this.showInorder(tree.right);
         }
     }
